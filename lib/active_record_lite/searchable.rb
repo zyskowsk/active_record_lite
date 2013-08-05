@@ -8,10 +8,12 @@ module Searchable
 
   	values = params.values
 
-  	DBConnection.execute(<<-SQL, *values)
+  	results = DBConnection.execute(<<-SQL, *values)
   		SELECT * 
     		FROM #{table_name}
     	 WHERE #{where_line}
   	SQL
+
+  	self.parse_all(results)
   end
 end

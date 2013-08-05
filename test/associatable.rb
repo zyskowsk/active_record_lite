@@ -5,6 +5,7 @@ cats_db_file_name =
   File.expand_path(File.join(File.dirname(__FILE__), "cats.db"))
 DBConnection.open(cats_db_file_name)
 
+
 class Cat < SQLObject
   set_table_name("cats")
   set_attrs(:id, :name, :owner_id)
@@ -26,6 +27,8 @@ class House < SQLObject
   set_attrs(:id, :address, :house_id)
 end
 
+
+p '-' * 20
 cat = Cat.find(1)
 p cat
 p cat.human

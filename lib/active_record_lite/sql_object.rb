@@ -5,6 +5,7 @@ require_relative './searchable'
 
 class SQLObject < MassObject
   extend Searchable
+  extend Associatable
 
   def self.set_table_name(table_name)
     @table_name = table_name
@@ -22,11 +23,13 @@ class SQLObject < MassObject
   end
 
   def self.find(id)
-    DBConnection.execute(<<-SQL, id).first
+    results = DBConnection.execute(<<-SQL, id)
       SELECT * 
         FROM #{table_name}
        WHERE id = ?
     SQL
+
+    self.parse_all(results).first
   end
 
   def create
