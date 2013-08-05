@@ -62,10 +62,13 @@ end
 
 module Associatable
   def assoc_params
+    @assoc_params = {} if @assoc_params.nil?
+    @assoc_params
   end
 
   def belongs_to(name, params = {})
-    aps = BelongsToAssocParams.new(name, params)
+    assoc_params[name] = BelongsToAssocParams.new(name, params)
+    aps = assoc_params[name]
 
     define_method(name) do 
       results = DBConnection.execute(<<-SQL, self.send(aps.foreign_key))
@@ -76,7 +79,6 @@ module Associatable
 
       aps.other_class.parse_all(results)
     end
-
   end
 
   def has_many(name, params = {})
@@ -94,5 +96,21 @@ module Associatable
   end
 
   def has_one_through(name, assoc1, assoc2)
+
+    define_method(name) do
+      aps1 = self.class.assoc_params[assoc1]
+      aps2 = aps1.other_class.assoc_params[assoc2]
+
+      results = DBConnection.execute(<<-SQL, self.send(aps1.foreign_key))
+        SELECT #{aps2.other_table}.*
+        FROM #{aps1.other_table}
+        JOIN #{aps2.other_table}
+        ON #{aps2.other_table}.#{aps1.primary_key} = #{aps1.other_table}.#{aps2.foreign_key}
+        WHERE #{aps1.other_table}.#{aps1.primary_key} = ?
+      SQL
+
+      aps2.other_class.parse_all(results)
+    end
+
   end
 end

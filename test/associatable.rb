@@ -27,6 +27,8 @@ class House < SQLObject
   set_attrs(:id, :address, :house_id)
 end
 
+p Cat.assoc_params
+p Human.assoc_params
 
 p '-' * 20
 cat = Cat.find(1)
