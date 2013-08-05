@@ -87,8 +87,8 @@ module Associatable
     define_method(name) do 
       results = DBConnection.execute(<<-SQL, self.send(aps.primary_key))
         SELECT *
-        FROM #{aps.other_table}
-        WHERE #{aps.other_table}.#{aps.foreign_key} = ?
+          FROM #{aps.other_table}
+         WHERE #{aps.other_table}.#{aps.foreign_key} = ?
       SQL
 
       aps.other_class.parse_all(results)
