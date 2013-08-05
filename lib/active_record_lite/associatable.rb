@@ -3,6 +3,7 @@ require 'active_support/inflector'
 require_relative './db_connection.rb'
 
 class AssocParams
+  
   def other_class
     get_class_name.constantize
   end
@@ -10,16 +11,13 @@ class AssocParams
   def other_table
     other_class.table_name
   end
+
 end
 
 class BelongsToAssocParams < AssocParams
+
   def initialize(name, params)
     @name, @params = name, params
-  end
-
-  def primary_key
-    return :id if @params[:primary_key].nil?
-    @params[:primary_key]  
   end
 
   def foreign_key
@@ -27,16 +25,23 @@ class BelongsToAssocParams < AssocParams
     @params[:foreign_key]
   end
 
-  def type
-  end
-
   def get_class_name
     return @name.to_s.camelize if @params[:class_name].nil?
     @params[:class_name]
   end
+
+  def primary_key
+    return :id if @params[:primary_key].nil?
+    @params[:primary_key]  
+  end
+
+  def type
+  end
+
 end
 
 class HasManyAssocParams < AssocParams
+
   def initialize(name, params, self_class)
     @name, @params, @self_class = name, params, self_class
   end
@@ -44,6 +49,11 @@ class HasManyAssocParams < AssocParams
   def foreign_key
     return self_class.to_s.underscore + "_id" if @params[:foreign_key].nil?
     @params[:foreign_key]
+  end
+
+  def get_class_name
+    return @name.to_s.singularize.camelize if @params[:class_name].nil?
+    @params[:class_name]
   end
 
   def primary_key
@@ -54,16 +64,12 @@ class HasManyAssocParams < AssocParams
   def type
   end
 
-  def get_class_name
-    return @name.to_s.singularize.camelize if @params[:class_name].nil?
-    @params[:class_name]
-  end
 end
 
 module Associatable
+
   def assoc_params
-    @assoc_params = {} if @assoc_params.nil?
-    @assoc_params
+    @assoc_params ||= {}
   end
 
   def belongs_to(name, params = {})
@@ -96,7 +102,6 @@ module Associatable
   end
 
   def has_one_through(name, assoc1, assoc2)
-
     define_method(name) do
       aps1 = self.class.assoc_params[assoc1]
       aps2 = aps1.other_class.assoc_params[assoc2]
@@ -112,6 +117,6 @@ module Associatable
 
       aps2.other_class.parse_all(results)
     end
-
   end
+
 end
