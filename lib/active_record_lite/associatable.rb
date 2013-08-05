@@ -88,11 +88,9 @@ module Associatable
       other_table_name = other_class.table_name
 
       results = DBConnection.execute(<<-SQL, self.id)
-        SELECT #{other_table_name}.*
-        FROM #{self.class.table_name}
-        JOIN #{other_table_name}
-        ON #{other_table_name}.#{foreign_key} = #{self.class.table_name}.#{primary_key}
-        WHERE #{self.class.table_name}.id = ?
+        SELECT *
+        FROM #{other_table_name}
+        WHERE #{other_table_name}.#{foreign_key} = ?
       SQL
 
       other_class.parse_all(results)
