@@ -22,6 +22,18 @@ p Cat.find(2)
 p Human.all
 p Cat.all
 
-c = Cat.new(:name => "Gizmo", :owner_id => 1)
-c.save # create
-c.save # update
+c = Cat.new(:name => "Rob", :owner_id => 1)
+c.create
+
+cat = Cat.new(:name => "ROBERT", :owner_id => 2)
+
+
+cat.save # create
+p Cat.all
+
+cat.name = "ROBBIE"
+
+cat.save # update
+p Cat.all
+
+
