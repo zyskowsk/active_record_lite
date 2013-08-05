@@ -103,10 +103,11 @@ module Associatable
 
       results = DBConnection.execute(<<-SQL, self.send(aps1.foreign_key))
         SELECT #{aps2.other_table}.*
-        FROM #{aps1.other_table}
-        JOIN #{aps2.other_table}
-        ON #{aps2.other_table}.#{aps1.primary_key} = #{aps1.other_table}.#{aps2.foreign_key}
-        WHERE #{aps1.other_table}.#{aps1.primary_key} = ?
+          FROM #{aps1.other_table}
+          JOIN #{aps2.other_table}
+            ON #{aps2.other_table}.#{aps1.primary_key} = 
+               #{aps1.other_table}.#{aps2.foreign_key}
+         WHERE #{aps1.other_table}.#{aps1.primary_key} = ?
       SQL
 
       aps2.other_class.parse_all(results)

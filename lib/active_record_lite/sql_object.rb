@@ -7,10 +7,6 @@ class SQLObject < MassObject
   extend Searchable
   extend Associatable
 
-  def self.initialize_assoc_params
-    @assoc_params = {}
-  end
-  
   def self.set_table_name(table_name)
     @table_name = table_name
   end
