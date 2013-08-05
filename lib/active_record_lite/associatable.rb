@@ -4,25 +4,59 @@ require_relative './db_connection.rb'
 
 class AssocParams
   def other_class
+    get_class_name.constantize
   end
 
   def other_table
+    other_class.table_name
   end
 end
 
 class BelongsToAssocParams < AssocParams
   def initialize(name, params)
+    @name, @params = name, params
+  end
+
+  def primary_key
+    return :id if @params[:primary_key].nil?
+    @params[:primary_key]  
+  end
+
+  def foreign_key
+    return @name.to_s + "_id" if @params[:foreign_key].nil?
+    @params[:foreign_key]
   end
 
   def type
+  end
+
+  def get_class_name
+    return @name.to_s.camelize if @params[:class_name].nil?
+    @params[:class_name]
   end
 end
 
 class HasManyAssocParams < AssocParams
   def initialize(name, params, self_class)
+    @name, @params, @self_class = name, params, self_class
   end
 
+  def foreign_key
+    return self_class.to_s.underscore + "_id" if @params[:foreign_key].nil?
+    @params[:foreign_key]
+  end
+
+  def primary_key
+    return :id if @params[:primary_key].nil?
+    @params[:primary_key]
+  end
+      
   def type
+  end
+
+  def get_class_name
+    return @name.to_s.singularize.camelize if @params[:class_name].nil?
+    @params[:class_name]
   end
 end
 
@@ -31,69 +65,31 @@ module Associatable
   end
 
   def belongs_to(name, params = {})
+    aps = BelongsToAssocParams.new(name, params)
 
     define_method(name) do 
-      if params[:class_name].nil?
-        other_class_name = name.to_s.camelize 
-      else
-        other_class_name = params[:class_name]
-      end
-      if params[:primary_key].nil?
-        primary_key = :id
-      else 
-        primary_key = params[:primary_key]
-      end
-      if params[:foreign_key].nil?
-        foreign_key = name.to_s + "_id" 
-      else
-        foreign_key = params[:foreign_key]
-      end
-
-      other_class = other_class_name.constantize
-      other_table_name = other_class.table_name
-
-      results = DBConnection.execute(<<-SQL, self.id)
-        SELECT #{other_table_name}.* 
-          FROM #{self.class.table_name}
-          JOIN #{other_table_name}
-            ON #{self.class.table_name}.#{foreign_key} = #{other_table_name}.#{primary_key}
-         WHERE #{self.class.table_name}.id = ? 
+      results = DBConnection.execute(<<-SQL, self.send(aps.foreign_key))
+        SELECT * 
+          FROM #{aps.other_table}
+         WHERE #{aps.other_table}.#{aps.primary_key} = ? 
       SQL
 
-      other_class.parse_all(results)
+      aps.other_class.parse_all(results)
     end
 
   end
 
   def has_many(name, params = {})
+    aps = HasManyAssocParams.new(name, params, self)
 
     define_method(name) do 
-      if params[:class_name].nil?
-        other_class_name = name.to_s.singularize.camelize
-      else
-        other_class_name = params[:class_name]
-      end
-      if params[:primary_key].nil?
-        primary_key = :id
-      else 
-        primary_key = params[:primary_key]
-      end
-      if params[:foreign_key].nil?
-        foreign_key = self.to_s.underscore + "_id"
-      else
-        foreign_key = params[:foreign_key]
-      end
-
-      other_class = other_class_name.constantize
-      other_table_name = other_class.table_name
-
-      results = DBConnection.execute(<<-SQL, self.id)
+      results = DBConnection.execute(<<-SQL, self.send(aps.primary_key))
         SELECT *
-        FROM #{other_table_name}
-        WHERE #{other_table_name}.#{foreign_key} = ?
+        FROM #{aps.other_table}
+        WHERE #{aps.other_table}.#{aps.foreign_key} = ?
       SQL
 
-      other_class.parse_all(results)
+      aps.other_class.parse_all(results)
     end
   end
 
