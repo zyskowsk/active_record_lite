@@ -1,4 +1,5 @@
 class MassObject
+  
   def self.set_attrs(*attributes)
   	@attributes = attributes
 

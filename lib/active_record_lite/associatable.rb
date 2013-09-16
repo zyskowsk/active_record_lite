@@ -11,7 +11,6 @@ class AssocParams
   def other_table
     other_class.table_name
   end
-
 end
 
 class BelongsToAssocParams < AssocParams
@@ -34,10 +33,6 @@ class BelongsToAssocParams < AssocParams
     return :id if @params[:primary_key].nil?
     @params[:primary_key]  
   end
-
-  def type
-  end
-
 end
 
 class HasManyAssocParams < AssocParams
@@ -60,10 +55,6 @@ class HasManyAssocParams < AssocParams
     return :id if @params[:primary_key].nil?
     @params[:primary_key]
   end
-      
-  def type
-  end
-
 end
 
 module Associatable
@@ -119,5 +110,4 @@ module Associatable
       aps2.other_class.parse_all(results)
     end
   end
-
 end
