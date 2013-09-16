@@ -102,6 +102,7 @@ module Associatable
   end
 
   def has_one_through(name, assoc1, assoc2)
+    
     define_method(name) do
       aps1 = self.class.assoc_params[assoc1]
       aps2 = aps1.other_class.assoc_params[assoc2]
