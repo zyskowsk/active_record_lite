@@ -30,13 +30,21 @@ end
 p Cat.assoc_params
 p Human.assoc_params
 
+p 'Test cat belongs_to human'
 p '-' * 20
 cat = Cat.find(1)
 p cat
 p cat.human
 
+
+p 'Test human has_many cats, human belongs_to house'
+p '-' * 20
+
 human = Human.find(1)
 p human.cats
 p human.house
+
+p 'Test cat has_one_through'
+p '-' * 20
 
 p cat.house

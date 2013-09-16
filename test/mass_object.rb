@@ -5,4 +5,6 @@ class MyMassObject < MassObject
 end
 
 obj = MyMassObject.new(:x => :x_val, :y => :y_val)
+
+p "Mass-Assigned Object:"
 p obj
