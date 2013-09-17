@@ -1,10 +1,12 @@
-## Active Record Lite
+Active Record Lite
+==================
 
 This is a lite implementation of the basic functionality that comes along with the ActiveRecord::Base class,
 built as an excercies to better understand the inner workings of the rails framework.
 
 
-### functionality implemented:
+Implemented Functionality
+-------------------------
 
 #### Helper Methods
 
